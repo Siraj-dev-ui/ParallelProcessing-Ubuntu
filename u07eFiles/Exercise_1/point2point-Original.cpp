@@ -34,43 +34,21 @@ int main(int argc, char *argv[])
 	}
 
 	myval = myrank;
-	switch (myrank)
-	{
-	case 1:
-		MPI_Send(&myval, 1, MPI_INT, 3, 0, MPI_COMM_WORLD);
-		break;
-	case 3:
-		MPI_Recv(&myval, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
-		break;
-	case 2:
-		MPI_Send(&myval, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-		break;
-	case 0:
-		MPI_Recv(&myval, 1, MPI_INT, 2, 0, MPI_COMM_WORLD, &status);
-	}
 
 	// ===========================================================
-	// POINT-TO-POINT COMMUNICATION IMPLEMENTATION
-	// if (myrank == 1)
-	// {
-	// 	MPI_Send(&myval, 1, MPI_INT, 3, 0, MPI_COMM_WORLD);
-	// }
-	// else if (myrank == 3)
-	// {
-	// 	MPI_Recv(&myval, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
-	// }
-	// else if (myrank == 2)
-	// {
-	// 	MPI_Send(&myval, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-	// }
-	// else if (myrank == 0)
-	// {
-	// 	MPI_Recv(&myval, 1, MPI_INT, 2, 0, MPI_COMM_WORLD, &status);
-	// }
+
+	// Enter your code here!
+	//  - Process 1 should send its value 'myval' to process 3, that receives it in 'myval'
+	//  - Process 2 should send its value 'myval' to process 0, that receives it in 'myval'
 	// ===========================================================
 
 	std::cout << "Process " << myrank << ": my value is " << myval << std::endl;
-
+	// With 4 Processes, this should print something like:
+	//  Process 0: my value is 2
+	//  Process 2: my value is 2
+	//  Process 1: my value is 1
+	//  Process 3: my value is 1
+	// I.e., Process 3 should print 1, process 0 should print 2.
 	MPI_Finalize();
 	return 0;
 }
