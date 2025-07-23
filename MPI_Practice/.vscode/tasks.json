@@ -1,0 +1,16 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build and Run rahmen",
+      "type": "shell",
+      "command": "make && ./rahmen",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "detail": "Compiles and runs rahmen using Makefile"
+    }
+  ]
+}

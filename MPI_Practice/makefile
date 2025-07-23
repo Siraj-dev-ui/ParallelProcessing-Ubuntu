@@ -1,5 +1,5 @@
 PROGS = rahmen pingpong ring ring1 ring2 vecmult vecmult2 vecmult3 \
-        pingpong2 ring3
+        pingpong2 ring3 mpi_practice
 SRC = makefile $(addsuffix .cpp, $(PROGS))
 PRE =
 
