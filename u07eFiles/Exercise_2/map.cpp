@@ -2,7 +2,7 @@
  * Parallel implementation of the 'map' operation.
  *
  * Run this program with 1, 2, 4, 8, or 16 processes!!
- * 
+ *
  ***************************************************************************/
 
 #include <iostream>
@@ -18,7 +18,7 @@ extern void read_data(double *x);
 extern double complex_fct(double x);
 extern bool check_data(double *y);
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	int myrank, nprocs;
 	MPI_Status status;
@@ -32,7 +32,8 @@ int main(int argc, char* argv[])
 	/* Determine own rank */
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 
-	if ((nprocs != 1) && (nprocs != 2) && (nprocs != 4) && (nprocs != 8) && (nprocs != 16)) {
+	if ((nprocs != 1) && (nprocs != 2) && (nprocs != 4) && (nprocs != 8) && (nprocs != 16))
+	{
 		if (myrank == 0)
 			std::cerr << "ERROR: need 1, 2, 4, 8, or 16 processes" << std::endl;
 		MPI_Finalize();
@@ -44,36 +45,44 @@ int main(int argc, char* argv[])
 	double *y;
 
 	// Only process 0 reads the array data into x!
-	if (myrank == 0) {
+	if (myrank == 0)
+	{
 		x = new double[N];
 		y = new double[N];
-		
+
 		// Read the data into x
 		read_data(x);
 	}
 
+	double *lx = new double[N];
+	double *ly = new double[N];
+
+	int n = N / nprocs;
+
+	MPI_Scatter(x, n, MPI_DOUBLE, lx, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
 	// ===========================================================
-	
+
 	// Parallelise this loop using all processes!
 	// Don't forget that you need to allocate the local arrays for
 	// x and y in all the MPI processes
-	
-	for (int i=0; i<N; i++)
-		y[i] = complex_fct(x[i]);
-	
+
+	for (int i = 0; i < N; i++)
+		ly[i] = complex_fct(lx[i]);
+
+	MPI_Gather(ly, n, MPI_DOUBLE, y, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
 	// ===========================================================
-	
+
 	// Only process 0 checks and prints the result!
-	if (myrank == 0) {
+	if (myrank == 0)
+	{
 		if (check_data(y))
 			std::cout << "Result is correct\n";
 		else
 			std::cout << "Result is NOT correct\n";
 	}
-	
+
 	MPI_Finalize();
 	return 0;
 }
-
-
-
