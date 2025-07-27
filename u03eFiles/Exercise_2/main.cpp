@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <stdlib.h>
 #include <math.h>
-
+#include <omp.h>
 
 constexpr int N = 1000;
 constexpr int M = 100;
@@ -29,28 +29,31 @@ extern void loop10();
 double sa[N], sb[N], sc[N];
 double sm[M][M];
 
-
 void init0()
 {
-	for (int i=0; i<N/2; i++) {
-		map[i] = 2*i;
-		map[N-1-i] = 2*i;
+	for (int i = 0; i < N / 2; i++)
+	{
+		map[i] = 2 * i;
+		map[N - 1 - i] = 2 * i;
 	}
 }
 
 void init1()
 {
-	for (int i=0; i<N; i++) {
+	for (int i = 0; i < N; i++)
+	{
 		a[i] = sa[i] = 111.1 + i;
 		b[i] = sb[i] = 9999.9 - i;
-		c[i] = sc[i] = 2.2 + i/100.0;
+		c[i] = sc[i] = 2.2 + i / 100.0;
 	}
 }
 
 void init2()
 {
-	for (int i=0; i<M; i++) {
-		for (int j=0; j<M; j++) {
+	for (int i = 0; i < M; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
 			m[i][j] = sm[i][j] = 432.1 * i + 1.23 * j;
 		}
 	}
@@ -58,8 +61,10 @@ void init2()
 
 void compare1(std::string loop, std::string array, double a1[N], double a2[N])
 {
-	for (int i=0; i<N; i++) {
-		if (a1[i] != a2[i]) {
+	for (int i = 0; i < N; i++)
+	{
+		if (a1[i] != a2[i])
+		{
 			std::cout << loop << ": " << array << "[" << i << "] differs!" << std::endl;
 			return;
 		}
@@ -68,9 +73,12 @@ void compare1(std::string loop, std::string array, double a1[N], double a2[N])
 
 void compare2(std::string loop, std::string array, double a1[M][M], double a2[M][M])
 {
-	for (int i=0; i<M; i++) {
-		for (int j=0; j<M; j++) {
-			if (a1[i][j] != a2[i][j]) {
+	for (int i = 0; i < M; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
+			if (a1[i][j] != a2[i][j])
+			{
 				std::cout << loop << ": " << array << "[" << i << "][" << j << "] differs!" << std::endl;
 				return;
 			}
@@ -92,7 +100,8 @@ void check2(std::string loop)
 
 void sloop1()
 {
-	for (int i=0; i<N; i++) {
+	for (int i = 0; i < N; i++)
+	{
 		sa[i] = sb[i] + sc[0];
 		sb[i] = sa[i] - sc[i];
 	}
@@ -100,70 +109,85 @@ void sloop1()
 
 void sloop2()
 {
-	for (int i=1; i<N; i++) {
-		sa[i] = sa[i-1];
+	for (int i = 1; i < N; i++)
+	{
+		sa[i] = sa[i - 1];
 		sb[i] = sa[i] + sc[i];
 	}
 }
 
 void sloop3()
 {
-	for (int i=1; i<N-2; i++) {
-		sa[i] = sb[i] + sa[i+2];
-		sc[i] = sb[i-1];
+	for (int i = 1; i < N - 2; i++)
+	{
+		sa[i] = sb[i] + sa[i + 2];
+		sc[i] = sb[i - 1];
 	}
 }
 
 void sloop4()
 {
-	for (int i=0; i<N; i++) {
-		sa[i] = sa[i] - 0.9 * sa[N/2];
+	for (int i = 0; i < N; i++)
+	{
+		sa[i] = sa[i] - 0.9 * sa[N / 2];
 	}
 }
 
 void sloop5()
 {
-	for (int i=0; i<N/2; i++) {
-		sa[i+N/3] = (sc[i] - sa[i])/2;
+	for (int i = 0; i < N / 2; i++)
+	{
+		sa[i + N / 3] = (sc[i] - sa[i]) / 2;
 	}
 }
 
 void sloop6()
 {
-	for (int i=0; i<N/3; i++) {
-		sa[i+N/3] = (sc[i] - sa[i])/2;
+	for (int i = 0; i < N / 3; i++)
+	{
+		sa[i + N / 3] = (sc[i] - sa[i]) / 2;
 	}
 }
 
 void sloop7()
 {
-	for (int i=0; i<N; i++) {
+	for (int i = 0; i < N; i++)
+	{
 		sa[map[i]] = sa[i] + sb[i];
 	}
 }
 
 void sloop8()
 {
-	for (int i=1; i<M-1; i++) {
-		for (int j=1; j<M-1; j++) {
-			sm[i][j] = (sm[i-1][j-1] + sm[i-1][j+1] + sm[i+1][j-1] + sm[i+1][j+1]) / 4;
+	for (int i = 1; i < M - 1; i++)
+	{
+		for (int j = 1; j < M - 1; j++)
+		{
+			sm[i][j] = (sm[i - 1][j - 1] + sm[i - 1][j + 1] + sm[i + 1][j - 1] + sm[i + 1][j + 1]) / 4;
 		}
 	}
 }
 
-
 int main(int argc, char *argv[])
 {
-	init1(); sloop1(); loop1(); check1("loop1");
-	init1(); sloop2(); loop2(); check1("loop2");
-	init1(); sloop3(); loop3(); check1("loop3");
-	init1(); sloop4(); loop4(); check1("loop4");
-	init1(); sloop5(); loop5(); check1("loop5");
-	init1(); sloop6(); loop6(); check1("loop6");
-	init0(); init1(); sloop7(); loop7(); check1("loop7");
-	init2(); sloop8(); loop8(); check2("loop8");
+	// init1(); sloop1(); loop1(); check1("loop1");
+	// init1(); sloop2(); loop2(); check1("loop2");
+	// init1(); sloop3(); loop3(); check1("loop3");
+	// init1(); sloop4(); loop4(); check1("loop4");
+	// init1(); sloop5(); loop5(); check1("loop5");
+	// init1(); sloop6(); loop6(); check1("loop6");
+	// init0(); init1(); sloop7(); loop7(); check1("loop7");
+	// init2(); sloop8(); loop8(); check2("loop8");
+	omp_set_num_threads(3);
+	int a[4];
+	// #pragma omp parallel for schedule(dynamic)
+	// #pragma omp parallel for schedule(dynamic, 1)
+	// #pragma omp parallel for schedule(dynamic,4)
+	// #pragma omp parallel for
+	for (int i = 0; i < 100; i++)
+		a[i] = omp_get_thread_num();
+	for (int i = 0; i < 100; i++)
+		std::cout << a[i] << " ";
+	std::cout << std::endl;
 	return 0;
 }
-
-
-
