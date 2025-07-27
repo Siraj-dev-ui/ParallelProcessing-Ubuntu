@@ -19,6 +19,7 @@ int map[N];
 
 void loop1()
 {
+#pragma omp parallel loop
 	for (int i = 0; i < N; i++)
 	{
 		a[i] = b[i] + c[0];
@@ -37,10 +38,19 @@ void loop2()
 
 void loop3()
 {
-	for (int i = 1; i < N - 2; i++)
+#pragma omp parallel
 	{
-		a[i] = b[i] + a[i + 2];
-		c[i] = b[i - 1];
+#pragma omp for
+		for (int i = 1; i < N - 2; i++)
+		{
+			a2[i] =
+		}
+#pragma omp for
+		for (int i = 1; i < N - 2; i++)
+		{
+			a[i] = b[i] + a[i + 2];
+			c[i] = b[i - 1];
+		}
 	}
 }
 
@@ -80,6 +90,7 @@ void loop8()
 {
 	for (int i = 1; i < M - 1; i++)
 	{
+#pragma omp parallel for private(i)
 		for (int j = 1; j < M - 1; j++)
 		{
 			m[i][j] = (m[i - 1][j - 1] + m[i - 1][j + 1] + m[i + 1][j - 1] + m[i + 1][j + 1]) / 4;
